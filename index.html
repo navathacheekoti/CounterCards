@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#7c3aed" />
-  <title>Counter Cards</title>
+  <title>Countly</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -51,20 +51,19 @@
 
     <header class="flex items-center justify-between mb-6 sm:mb-8">
       <div class="flex items-center gap-3">
+        <!-- Logo: C mark -->
         <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500
                     shadow-lg shadow-purple-500/30 flex items-center justify-center">
-          <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-          </svg>
+          <span class="text-white font-extrabold text-lg leading-none">C</span>
         </div>
         <div>
           <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight
                      bg-gradient-to-r from-purple-600 to-blue-600
                      dark:from-purple-400 dark:to-blue-400
                      bg-clip-text text-transparent">
-            Counter Cards
+            Countly
           </h1>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Track anything, beautifully.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Count what matters.</p>
         </div>
       </div>
 
@@ -110,15 +109,15 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
         </svg>
       </div>
-      <p class="font-semibold text-slate-700 dark:text-slate-200">No cards yet</p>
+      <p class="font-semibold text-slate-700 dark:text-slate-200">No counters yet</p>
       <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Tap “Add Card” to create your first counter.</p>
     </div>
 
   </div>
 
   <script>
-    const STORAGE_KEY = 'counter-cards-v3';
-    const THEME_KEY   = 'counter-theme-v3';
+    const STORAGE_KEY = 'counter-cards-v5';
+    const THEME_KEY   = 'counter-theme-v5';
     let cards = [];
 
     /* ---------------- Theme ---------------- */
@@ -246,10 +245,7 @@
         </div>
       `;
 
-      const titleInput = div.querySelector('.card-title');
-      // IMPORTANT: only set value if a title was actually saved.
-      // Empty string → placeholder shows through.
-      titleInput.value = card.title || '';
+      div.querySelector('.card-title').value = card.title || '';
       return div;
     }
 
@@ -263,16 +259,16 @@
     function addCard() {
       const newCard = {
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-        title: '',   // ← empty by default, placeholder will show
+        title: '',
         count: 0,
       };
-      cards.push(newCard);
-      container.appendChild(createCardElement(newCard));
+      cards.unshift(newCard);                          // front of data array
+      container.prepend(createCardElement(newCard));   // front of DOM
       updateEmptyState();
       save();
 
-      const el = container.lastElementChild?.querySelector('.card-title');
-      if (el) el.focus();   // focus for quick naming (no select-all, since empty)
+      const el = container.firstElementChild?.querySelector('.card-title');
+      if (el) el.focus();
     }
 
     /* ---------------- Events ---------------- */
@@ -312,7 +308,6 @@
       save();
     });
 
-    // Save title as user types (empty string is allowed and saved as empty)
     container.addEventListener('input', (e) => {
       if (!e.target.classList.contains('card-title')) return;
       const cardEl = e.target.closest('[data-id]');
@@ -324,7 +319,6 @@
       }
     });
 
-    // Enter blurs the title
     container.addEventListener('keydown', (e) => {
       if (e.target.classList.contains('card-title') && e.key === 'Enter') {
         e.preventDefault();
@@ -335,7 +329,6 @@
     document.getElementById('add-card').addEventListener('click', addCard);
     renderAll();
 
-    // Seed one card for first-time users
     if (cards.length === 0) addCard();
   </script>
 </body>
